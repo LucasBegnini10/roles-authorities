@@ -9,7 +9,7 @@ Para isso, precisaremos de classes de domínios:
 
 ## **User**
 
-Representará o usuário do sistema. Ele terá um relacionamento com **role** e **authority** de muitos para muitos. Isso significa que termos nossas roles e authorities no banco, e realizaremos nossos relacionamentos
+Representará o usuário do sistema. Ele terá um relacionamento com **role** e **authority** de muitos para muitos.
 
 | Propriedade | Tipo |
 | --- | --- |
@@ -17,12 +17,14 @@ Representará o usuário do sistema. Ele terá um relacionamento com **role** e 
 | username | String |
 | email | String |
 | password | String (hash) |
-| roles | List<Role> |
-| authorities | List<Authorities> |
+| roles | `List<Role>` |
+| authorities | `List<Authorities>` |
+
+Para hash do campo `password`, será utilizado `BCrypt`
 
 ## Role
 
-Representará nosso cargo no sistema. Terá um relacionamento com user de muitos para muitos no sistema.
+Representará nosso cargo no sistema. 
 
 | Propriedade | Tipo |
 | --- | --- |
@@ -32,7 +34,7 @@ Representará nosso cargo no sistema. Terá um relacionamento com user de muitos
 
 ## Authorities
 
-Representará nossos privilégios no sistema. Terá um relacionamento com user de muitos para muitos no sistema.
+Representará nossos privilégios no sistema.
 
 | Propriedade | Tipo |
 | --- | --- |
