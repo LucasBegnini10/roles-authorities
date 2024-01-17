@@ -11,34 +11,34 @@ Para isso, precisaremos de classes de domínios:
 
 Representará o usuário do sistema. Ele terá um relacionamento com **role** e **authority** de muitos para muitos. Isso significa que termos nossas roles e authorities no banco, e realizaremos nossos relacionamentos
 
-| Propriedade | Tipo |  |
-| --- | --- | --- |
-| id | UUID | PK |
-| username | String | NOT NULL |
-| email | String | UNIQUE |
-| password | String (hash) | NOT NULL |
-| roles | List<Role> |  |
-| authorities | List<Authorities> |  |
+| Propriedade | Tipo |
+| --- | --- |
+| id | UUID |
+| username | String |
+| email | String |
+| password | String (hash) |
+| roles | List<Role> |
+| authorities | List<Authorities> |
 
 ## Role
 
 Representará nosso cargo no sistema. Terá um relacionamento com user de muitos para muitos no sistema.
 
-| Propriedade | Tipo |  |
-| --- | --- | --- |
-| id | UUID |  |
-| name | String | UNIQUE |
-| description | String |  |
+| Propriedade | Tipo |
+| --- | --- |
+| id | UUID |
+| name | String |
+| description | String |
 
 ## Authorities
 
 Representará nossos privilégios no sistema. Terá um relacionamento com user de muitos para muitos no sistema.
 
-| Propriedade | Tipo |  |
-| --- | --- | --- |
-| id | UUID |  |
-| name | String | UNIQUE |
-| description | String |  |
+| Propriedade | Tipo |
+| --- | --- |
+| id | UUID |
+| name | String |
+| description | String |
 
 # Requisitos
 
