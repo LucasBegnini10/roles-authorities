@@ -1,7 +1,9 @@
-package com.server.auth.domain;
+package com.server.auth.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.server.auth.domain.authority.Authority;
+import com.server.auth.domain.role.Role;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -31,7 +33,4 @@ public class User {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Authority> authorities;
-
-
-
 }

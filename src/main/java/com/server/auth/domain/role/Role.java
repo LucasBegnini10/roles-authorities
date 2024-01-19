@@ -1,5 +1,4 @@
-package com.server.auth.domain;
-
+package com.server.auth.domain.role;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,7 +10,9 @@ public class Role {
     private Long id;
 
     @Column(unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private RoleType name;
 
     private String description;
+
 }

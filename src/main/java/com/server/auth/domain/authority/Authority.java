@@ -1,4 +1,4 @@
-package com.server.auth.domain;
+package com.server.auth.domain.authority;
 
 import jakarta.persistence.*;
 
@@ -11,7 +11,8 @@ public class Authority {
     private Long id;
 
     @Column(unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private AuthorityType name;
 
     private String description;
 
