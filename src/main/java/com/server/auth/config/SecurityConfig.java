@@ -1,5 +1,6 @@
 package com.server.auth.config;
 
+import com.server.auth.domain.role.RoleType;
 import com.server.auth.filter.TokenValidatorFilter;
 import com.server.auth.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,8 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests)-> requests
-                        .requestMatchers("/api/v1/auth").permitAll()
-                        .requestMatchers("/api/v1/auth/register").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/users").hasRole(RoleType.ROLE_ADMIN.getRole())
                         .anyRequest().authenticated())
                 .addFilterBefore(new TokenValidatorFilter(new JwtService()), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(Customizer.withDefaults())
