@@ -1,6 +1,5 @@
 package com.server.auth.domain.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.server.auth.domain.authority.Authority;
 import com.server.auth.domain.role.Role;
@@ -28,12 +27,9 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Role> roles;
 
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Authority> authorities;
 }

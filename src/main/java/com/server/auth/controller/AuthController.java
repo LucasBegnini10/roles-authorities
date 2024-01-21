@@ -1,6 +1,7 @@
 package com.server.auth.controller;
 
 import com.server.auth.domain.auth.AuthDTO;
+import com.server.auth.domain.user.CreateUserDTO;
 import com.server.auth.domain.user.User;
 import com.server.auth.service.AuthService;
 import com.server.auth.service.UserService;
@@ -24,7 +25,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user){
+    public User registerUser(@RequestBody CreateUserDTO user){
         return userService.createUser(user);
     }
 
