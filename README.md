@@ -28,7 +28,7 @@ Representará nosso cargo no sistema.
 
 | Propriedade | Tipo |
 | --- | --- |
-| id | UUID |
+| id | Long |
 | name | String |
 | description | String |
 
@@ -38,15 +38,7 @@ Representará nossos privilégios no sistema.
 
 | Propriedade | Tipo |
 | --- | --- |
-| id | UUID |
+| id | Long |
 | name | String |
 | description | String |
 
-# Requisitos
-
-- [ ]  O sistema deve possuir um CRUD de usuários;
-- [ ]  O sistema deve possuir a alteração dos dados do usuário;
-- [ ]  O sistema deve conseguir alterar cargos do usuário;
-- [ ]  O sistema deve conseguir alterar permissões do usuário;
-- [ ]  O sistema deve autenticar o usuário;
-- [ ]  O sistema deve autorizar o acesso a determinados recursos a partir do cargo e das permissões
