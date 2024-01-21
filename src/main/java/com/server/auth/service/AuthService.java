@@ -1,10 +1,9 @@
 package com.server.auth.service;
 import com.server.auth.domain.auth.AuthDTO;
-import com.server.auth.domain.user.User;
-import com.server.auth.domain.user.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,27 +13,16 @@ public class AuthService {
     private UserService userService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     public String auth(AuthDTO authDto){
-        try {
-            String username = authDto.username();
-            String password = authDto.password();
+        var usernamePassword = new UsernamePasswordAuthenticationToken(authDto.username(), authDto.password());
+        Authentication auth = this.authenticationManager.authenticate(usernamePassword);
 
-            User user = userService.getUserByEmail(username);
-
-            boolean passwordsMatches = passwordEncoder.matches(password, user.getPassword());
-
-            if(!passwordsMatches) throw new BadCredentialsException("Invalid password");
-
-            return jwtService.createJwt(user);
-
-        } catch (UserNotFoundException ex){
-            throw new BadCredentialsException("User not found");
-        }
+        return jwtService.createJwt(auth);
     }
 
 }

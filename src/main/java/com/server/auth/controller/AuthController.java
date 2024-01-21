@@ -4,7 +4,10 @@ import com.server.auth.domain.auth.AuthDTO;
 import com.server.auth.domain.user.User;
 import com.server.auth.service.AuthService;
 import com.server.auth.service.UserService;
+import com.server.auth.util.RestResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +29,9 @@ public class AuthController {
     }
 
     @PostMapping
-    public String authentication(@RequestBody AuthDTO authDTO){
-        return authService.auth(authDTO);
+    public ResponseEntity<Object> authentication(@RequestBody AuthDTO authDTO){
+        String token = authService.auth(authDTO);
+
+        return RestResponseHandler.generateResponse("Authenticated", HttpStatus.OK, token);
     }
 }
