@@ -1,9 +1,11 @@
 package com.server.auth.domain.authority;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "authorities")
+@Getter
 public class Authority {
 
     @Id
