@@ -1,5 +1,7 @@
 package com.server.auth.config;
 
+import com.server.auth.domain.authority.Authority;
+import com.server.auth.domain.authority.AuthorityType;
 import com.server.auth.domain.role.RoleType;
 import com.server.auth.filter.TokenValidatorFilter;
 import com.server.auth.service.JwtService;
@@ -28,6 +30,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests)-> requests
                         .requestMatchers("/api/v1/auth/**").permitAll()
+//                        .requestMatchers("/api/v1/users").hasAuthority(AuthorityType.VIEW_USERS.getAuthority())
                         .requestMatchers("/api/v1/users").hasRole(RoleType.ROLE_ADMIN.getRole())
                         .anyRequest().authenticated())
                 .addFilterBefore(new TokenValidatorFilter(new JwtService()), UsernamePasswordAuthenticationFilter.class)
