@@ -1,27 +1,28 @@
 package com.server.auth.config;
 
-import com.server.auth.domain.authority.Authority;
-import com.server.auth.domain.authority.AuthorityType;
 import com.server.auth.domain.role.RoleType;
 import com.server.auth.filter.TokenValidatorFilter;
-import com.server.auth.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
+    private final TokenValidatorFilter tokenValidatorFilter;
+
     @Autowired
-    private UsernamePwdAuthenticationProvider usernamePwdAuthenticationProvider;
+    public SecurityConfig(TokenValidatorFilter tokenValidatorFilter){
+        this.tokenValidatorFilter = tokenValidatorFilter;
+    }
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -33,16 +34,14 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/v1/users").hasAuthority(AuthorityType.VIEW_USERS.getAuthority())
                         .requestMatchers("/api/v1/users").hasRole(RoleType.ROLE_ADMIN.getRole())
                         .anyRequest().authenticated())
-                .addFilterBefore(new TokenValidatorFilter(new JwtService()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(tokenValidatorFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(usernamePwdAuthenticationProvider);
-        return authenticationManagerBuilder.build();
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }

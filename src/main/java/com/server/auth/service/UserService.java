@@ -17,17 +17,23 @@ import java.util.Set;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final RoleService roleService;
+
+
+    private final AuthorityService authorityService;
 
     @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private AuthorityService authorityService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(
+            UserRepository userRepository,
+            RoleService roleService,
+            AuthorityService authorityService
+    ) {
+        this.userRepository = userRepository;
+        this.roleService = roleService;
+        this.authorityService = authorityService;
+    }
 
     public User getUserByEmail(String email) throws UserNotFoundException{
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -35,14 +41,21 @@ public class UserService {
         return userOptional.orElseThrow(UserNotFoundException::new);
     }
 
-    public User createUser(CreateUserDTO createUser){
+    public User save(User user){
+        return userRepository.save(user);
+    }
+
+    public List<User> getAll(){
+        return userRepository.findAll();
+    }
+
+    public User buildUser(CreateUserDTO createUser){
         User user = new User();
 
         user.setUsername(createUser.getUsername());
         user.setEmail(createUser.getEmail());
 
-        String hashPassword = passwordEncoder.encode(createUser.getPassword());
-        user.setPassword(hashPassword);
+        user.setPassword(createUser.getPassword());
 
         Set<Role> roles = roleService.getRolesByName(createUser.getRoles());
         user.setRoles(roles);
@@ -50,10 +63,6 @@ public class UserService {
         Set<Authority> authorities = authorityService.getAuthoritiesByName(createUser.getAuthorities());
         user.setAuthorities(authorities);
 
-        return userRepository.save(user);
-    }
-
-    public List<User> getAll(){
-        return userRepository.findAll();
+        return user;
     }
 }

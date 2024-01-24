@@ -26,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public User registerUser(@RequestBody CreateUserDTO user){
-        return userService.createUser(user);
+        return authService.register(user);
     }
 
     @PostMapping
