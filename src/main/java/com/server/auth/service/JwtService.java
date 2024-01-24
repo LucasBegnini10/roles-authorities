@@ -1,70 +1,94 @@
 package com.server.auth.service;
 
+import com.server.auth.domain.authority.Authority;
+import com.server.auth.domain.role.Role;
+import com.server.auth.domain.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.security.Key;
+import java.util.*;
 
 @Service
 public class JwtService {
 
-    public String createJwt(Authentication auth){
-        SecretKey key = Keys.hmacShaKeyFor("f102b8dd-ddae-415b-8abe-3f2243f410fd".getBytes(StandardCharsets.UTF_8));
-        return Jwts
-                .builder()
-                .setIssuer("Lucas Begnini Auth")
-                .setSubject("JWT Token")
-                .claim("username", auth.getName())
-                .claim("authorities", populateAuthorities(auth.getAuthorities()))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + 30000000))
-                .signWith(key)
-                .compact();
+    @Value("${application.security.jwt.secret-key}")
+    private String secretKey;
+
+    @Value("${application.security.jwt.expiration}")
+    private long jwtExpiration;
+    
+    private Key getSignInKey(){
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private String populateAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    public String createJwt(User user){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", user.getEmail());
+        claims.put("authorities", populateAuthorities(user));
+
+        return buildToken(claims);
+    }
+
+    private String populateAuthorities(User user) {
+
         Set<String> authoritiesSet = new HashSet<>();
-        for (GrantedAuthority authority : authorities) {
-            authoritiesSet.add(authority.toString());
+        for (Authority authority : user.getAuthorities()) {
+            authoritiesSet.add(authority.getName().toString());
+        }
+
+        for(Role role: user.getRoles()){
+            authoritiesSet.add(role.getName().toString());
         }
 
         return String.join(",", authoritiesSet);
     }
 
-    public void validateToken(String jwt){
+    private String buildToken(Map<String, Object> claims) {
+        long currentTimeMillis = System.currentTimeMillis();
+        Date now = new Date(currentTimeMillis);
+
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(currentTimeMillis + jwtExpiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public void validateToken(String token){
         try {
-            SecretKey key = Keys.hmacShaKeyFor("f102b8dd-ddae-415b-8abe-3f2243f410fd".getBytes(StandardCharsets.UTF_8));
-
-            Claims claims = Jwts
-                    .parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(jwt)
-                    .getBody();
-
-            String username = String.valueOf(claims.get("username"));
-            String authorities = (String) claims.get("authorities");
-
-            Authentication auth = new UsernamePasswordAuthenticationToken(username, null,
-                    AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            extractAllClaims(token);
 
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid Token received!");
         }
     }
 
+    private Claims extractAllClaims(String token){
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String extractUserName(String token){
+        Claims claims = extractAllClaims(token);
+        return String.valueOf(claims.get("username"));
+    }
+
+    public String extractAuthorities(String token){
+        Claims claims = extractAllClaims(token);
+        return (String) claims.get("authorities");
+    }
 }
