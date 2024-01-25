@@ -2,12 +2,15 @@
 
 Tópicos do projeto:
 
-- Autenticação com JWT
-- Autorização com Roles e Authorities
+- Autenticação com JWT;
+- Autorização com Roles e Authorities.
 
-Para isso, precisaremos de classes de domínios:
+Vídeo explicativo do projeto: https://www.youtube.com/watch?v=6h4abGFXNPY
 
-## **User**
+
+## Classes de Domínio
+
+### **User**
 
 Representará o usuário do sistema. Ele terá um relacionamento com **role** e **authority** de muitos para muitos.
 
@@ -22,7 +25,7 @@ Representará o usuário do sistema. Ele terá um relacionamento com **role** e 
 
 Para hash do campo `password`, será utilizado `BCrypt`
 
-## Role
+### Role
 
 Representará nosso cargo no sistema. 
 
@@ -32,7 +35,7 @@ Representará nosso cargo no sistema.
 | name | String |
 | description | String |
 
-## Authorities
+### Authorities
 
 Representará nossos privilégios no sistema.
 
